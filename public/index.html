@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAC ONE — Consumer Analytics & Classification</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --bg:          #FFFFFF;
+  --bg-alt:      #F5F5F7;
+  --bg-card:     #FFFFFF;
+  --border:      #E5E5EA;
+  --text-1:      #0A0A0A;
+  --text-2:      #3A3A3C;
+  --text-3:      #8E8E93;
+  --action:      #5B5BD6;
+  --action-h:    #4747C2;
+  --purple:      #9B59D6;
+  --purple-soft: rgba(155,89,214,0.10);
+  --positive:    #2ECC71;
+  --positive-s:  rgba(46,204,113,0.10);
+  --negative:    #E74C3C;
+  --negative-s:  rgba(231,76,60,0.10);
+  --neutral:     #F39C12;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.12);
+  --radius:      14px;
+  --radius-sm:   8px;
+  --transition:  0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+[data-theme="dark"] {
+  --bg:          #0A0A0F;
+  --bg-alt:      #111118;
+  --bg-card:     #16161E;
+  --border:      rgba(255,255,255,0.08);
+  --text-1:      #F2F2F7;
+  --text-2:      #AEAEB2;
+  --text-3:      #636366;
+  --action:      #7C7CF8;
+  --action-h:    #9090FF;
+  --purple:      #B47DFF;
+  --purple-soft: rgba(180,125,255,0.12);
+  --positive:    #32D74B;
+  --positive-s:  rgba(50,215,75,0.10);
+  --negative:    #FF453A;
+  --negative-s:  rgba(255,69,58,0.10);
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.4);
+  --shadow-lg:   0 12px 48px rgba(0,0,0,0.5);
+}
+
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  line-height: 1.6;
+  transition: background var(--transition), color var(--transition);
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* ══════════════════════════════════════
+   UTILITY
+══════════════════════════════════════ */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.section { padding: 80px 0; }
+.section-alt { background: var(--bg-alt); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--purple-soft);
+  border: 1px solid rgba(155,89,214,0.2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--purple);
+  text-transform: uppercase;
+}
+.section-label {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  color: var(--text-1);
+}
+.section-sub {
+  text-align: center;
+  color: var(--text-2);
+  font-size: 16px;
+  max-width: 580px;
+  margin: 0 auto;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════ */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+[data-theme="dark"] .navbar {
+  background: rgba(10,10,15,0.85);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-1);
+}
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--action) 0%, var(--purple) 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.nav-logo span { color: var(--action); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color var(--transition);
+}
+.nav-links a:hover { color: var(--action); }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.theme-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.theme-btn:hover { border-color: var(--action); color: var(--action); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  white-space: nowrap;
+  text-align: center;
+}
+.btn-primary {
+  background: var(--action);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(91,91,214,0.35);
+}
+.btn-primary:hover {
+  background: var(--action-h);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(91,91,214,0.45);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--action);
+  border: 1.5px solid var(--action);
+}
+.btn-outline:hover {
+  background: var(--purple-soft);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover {
+  border-color: var(--action);
+  color: var(--action);
+}
+.btn-lg {
+  padding: 13px 28px;
+  font-size: 15px;
+  border-radius: var(--radius);
+}
+.btn-wa {
+  background: #25D366;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(37,211,102,0.35);
+}
+.btn-wa:hover {
+  background: #128C7E;
+  transform: translateY(-1px);
+}
+
+/* hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 6px;
+  background: none;
+  border: none;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-1);
+  border-radius: 2px;
+  transition: all var(--transition);
+}
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 12px 20px 20px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
+}
+.mobile-menu a:last-child { border-bottom: none; }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero {
+  padding: 80px 0 64px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(91,91,214,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(155,89,214,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+[data-theme="dark"] .hero-bg {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(91,91,214,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(155,89,214,0.12) 0%, transparent 50%);
+}
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 28px;
+  position: relative;
+}
+.hero-badge { animation: fadeUp 0.6s ease both; }
+.hero-title {
+  font-size: clamp(32px, 6vw, 60px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -1.5px;
+  animation: fadeUp 0.6s 0.1s ease both;
+  color: var(--text-1);
+}
+.hero-title .accent { color: var(--action); }
+.hero-title .accent-g { color: var(--purple); }
+
+.hero-sub {
+  font-size: clamp(15px, 2.5vw, 18px);
+  color: var(--text-2);
+  max-width: 600px;
+  font-weight: 400;
+  line-height: 1.7;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+
+/* stat strip */
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.hstat { text-align: center; }
+.hstat-val {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--text-1);
+  line-height: 1;
+}
+.hstat-val .col-a { color: var(--action); }
+.hstat-val .col-g { color: var(--positive); }
+.hstat-val .col-p { color: var(--purple); }
+.hstat-lbl {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* dashboard mockup */
+.hero-mockup {
+  width: 100%;
+  max-width: 720px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+  animation: fadeUp 0.7s 0.5s ease both;
+}
+.mock-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+.md-r{background:#FF5F57;} .md-y{background:#FFBD2E;} .md-g{background:#28C840;}
+.mock-title-text {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+.mock-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.mock-chart-area {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.mock-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mock-bar-label {
+  font-size: 10px;
+  color: var(--text-3);
+  width: 52px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+.mock-bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-alt);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.mock-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.mbf-g { background: var(--positive); }
+.mbf-a { background: var(--action); }
+.mbf-y { background: var(--neutral); }
+.mbf-r { background: var(--negative); }
+.mbf-gr { background: var(--text-3); }
+.mock-bar-pct {
+  font-size: 10px;
+  color: var(--text-2);
+  width: 28px;
+  text-align: right;
+  font-weight: 600;
+}
+.mock-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mock-alert-card {
+  background: var(--negative-s);
+  border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.mac-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--negative);
+  margin-bottom: 4px;
+}
+.mac-body {
+  font-size: 10px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.mock-stats-row {
+  display: flex;
+  gap: 6px;
+}
+.mock-stat-mini {
+  flex: 1;
+  background: var(--bg-alt);
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.msm-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+  line-height: 1;
+}
+.msm-lbl { font-size: 8.5px; color: var(--text-3); margin-top: 2px; }
+.mock-pill {
+  background: var(--positive-s);
+  border: 1px solid rgba(46,204,113,0.25);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 10px;
+  color: var(--positive);
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* ══════════════════════════════════════
+   PROBLEMA STAT
+══════════════════════════════════════ */
+.stat-banner {
+  background: var(--action);
+  color: #fff;
+  padding: 40px 0;
+  text-align: center;
+}
+.stat-banner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.stat-big {
+  font-size: clamp(56px, 10vw, 100px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -3px;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.stat-big.visible { opacity: 1; }
+.stat-banner-text {
+  font-size: clamp(14px, 2.5vw, 18px);
+  font-weight: 500;
+  opacity: 0.9;
+  max-width: 560px;
+  line-height: 1.5;
+}
+.stat-banner-sub {
+  font-size: 13px;
+  opacity: 0.7;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════
+   FEATURES
+══════════════════════════════════════ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+}
+.feat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  opacity: 0;
+  transform: translateY(20px);
+}
+.feat-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.feat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--action);
+}
+.feat-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.fi-action { background: rgba(91,91,214,0.12); color: var(--action); }
+.fi-purple { background: var(--purple-soft); color: var(--purple); }
+.fi-green  { background: var(--positive-s); color: var(--positive); }
+.fi-amber  { background: rgba(243,156,18,0.1); color: var(--neutral); }
+.feat-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.2;
+}
+.feat-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+  font-weight: 400;
+}
+.feat-stat {
+  margin-top: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--action);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ══════════════════════════════════════
+   CHANNELS
+══════════════════════════════════════ */
+.channels-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+.channel-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.channel-chip:hover { border-color: var(--action); color: var(--action); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.channel-chip i { font-size: 18px; }
+.ch-fb { color: #1877F2; }
+.ch-ig { color: #E1306C; }
+.ch-yt { color: #FF0000; }
+.ch-x  { color: var(--text-1); }
+
+/* ══════════════════════════════════════
+   PRICING
+══════════════════════════════════════ */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+  align-items: start;
+}
+.price-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: transform var(--transition), box-shadow var(--transition);
+  opacity: 0;
+  transform: translateY(20px);
+}
+.price-card.visible { opacity: 1; transform: translateY(0); }
+.price-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.price-card.featured {
+  border-color: var(--action);
+  box-shadow: 0 0 0 3px rgba(91,91,214,0.12), var(--shadow-md);
+}
+.price-card.featured:hover { box-shadow: 0 0 0 3px rgba(91,91,214,0.2), var(--shadow-lg); }
+.popular-tag {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--action);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.price-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.price-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+}
+.price-currency { font-size: 22px; font-weight: 800; color: var(--text-1); }
+.price-val { font-size: 52px; font-weight: 900; color: var(--text-1); letter-spacing: -2px; }
+.price-period { font-size: 14px; color: var(--text-3); font-weight: 400; }
+.price-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.price-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.price-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.price-features li i {
+  font-size: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.pf-yes { color: var(--positive); }
+.pf-no  { color: var(--text-3); }
+.pf-no ~ span { color: var(--text-3); text-decoration: line-through; }
+.price-cta { margin-top: auto; }
+
+/* ══════════════════════════════════════
+   COMPARISON
+══════════════════════════════════════ */
+.compare-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-top: 48px;
+  overflow-x: auto;
+}
+.compare-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+.compare-table th {
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.compare-table th.highlight {
+  background: rgba(91,91,214,0.08);
+  color: var(--action);
+}
+.compare-table td {
+  padding: 13px 16px;
+  font-size: 13px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table td.highlight {
+  background: rgba(91,91,214,0.05);
+  font-weight: 600;
+  color: var(--action);
+}
+.compare-table tr:hover td { background: var(--bg-alt); }
+.compare-table tr:hover td.highlight { background: rgba(91,91,214,0.08); }
+.ct-yes { color: var(--positive); font-size: 16px; }
+.ct-no  { color: var(--negative); font-size: 14px; }
+.ct-partial { color: var(--neutral); font-size: 13px; }
+.ct-price-bad { color: var(--negative); font-weight: 600; font-size: 11px; }
+.ct-price-good { color: var(--positive); font-weight: 700; }
+
+/* ══════════════════════════════════════
+   ABOUT
+══════════════════════════════════════ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  margin-top: 48px;
+}
+.about-text { display: flex; flex-direction: column; gap: 20px; }
+.about-lead {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 1.5;
+}
+.about-body {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.8;
+}
+.about-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ab-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.ab-item i { color: var(--action); font-size: 13px; margin-top: 3px; flex-shrink: 0; }
+
+.team-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.team-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.team-card:hover { border-color: var(--action); transform: translateX(4px); }
+.team-avatar {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ta-1 { background: rgba(91,91,214,0.15); color: var(--action); }
+.ta-2 { background: var(--purple-soft); color: var(--purple); }
+.ta-3 { background: var(--positive-s); color: var(--positive); }
+.ta-4 { background: rgba(243,156,18,0.1); color: var(--neutral); }
+.team-info {}
+.team-name { font-size: 13px; font-weight: 700; color: var(--text-1); }
+.team-role { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+
+/* ══════════════════════════════════════
+   IMPACT
+══════════════════════════════════════ */
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.impact-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.impact-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--purple); }
+.impact-icon { font-size: 28px; }
+.impact-stat {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--action);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.impact-stat.green { color: var(--positive); }
+.impact-stat.purple { color: var(--purple); }
+.impact-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.3;
+}
+.impact-desc {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+   CTA FINAL
+══════════════════════════════════════ */
+.cta-section {
+  background: linear-gradient(135deg, var(--action) 0%, var(--purple) 100%);
+  padding: 72px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.cta-inner { position: relative; z-index: 1; }
+.cta-title {
+  font-size: clamp(26px, 5vw, 44px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+.cta-sub {
+  color: rgba(255,255,255,0.8);
+  font-size: 16px;
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.cta-buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-white {
+  background: #fff;
+  color: var(--action);
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.btn-white:hover {
+  background: #f0f0ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.btn-white-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.6);
+  font-weight: 600;
+}
+.btn-white-outline:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+.cta-note {
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  margin-top: 18px;
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.footer {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  padding: 48px 0 28px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.footer-brand { display: flex; flex-direction: column; gap: 14px; }
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-1);
+}
+.footer-logo-icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--action), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 15px;
+}
+.footer-desc {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.7;
+  max-width: 300px;
+}
+.footer-social {
+  display: flex;
+  gap: 10px;
+}
+.social-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  color: var(--text-2);
+  transition: all var(--transition);
+}
+.social-btn:hover { border-color: var(--action); color: var(--action); transform: translateY(-2px); }
+.footer-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.footer-links li a {
+  font-size: 13px;
+  color: var(--text-2);
+  transition: color var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.footer-links li a i { font-size: 11px; color: var(--action); }
+.footer-links li a:hover { color: var(--action); }
+.footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-copy {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.footer-copy strong { color: var(--text-2); }
+.footer-folio {
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — MOBILE FIRST
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .nav-right .btn { display: none; }
+
+  .hero { padding: 48px 0 40px; }
+  .hero-stats { gap: 20px; }
+  .hstat-val { font-size: 26px; }
+
+  .mock-body { grid-template-columns: 1fr; }
+
+  .section { padding: 56px 0; }
+
+  .features-grid { grid-template-columns: 1fr; }
+
+  .about-grid { grid-template-columns: 1fr; }
+
+  .impact-grid { grid-template-columns: 1fr; }
+
+  .pricing-grid { grid-template-columns: 1fr; }
+
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+
+  .cta-buttons { flex-direction: column; align-items: center; }
+  .btn-lg { width: 100%; max-width: 320px; justify-content: center; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .impact-grid { grid-template-columns: repeat(3,1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fa-solid fa-comments"></i></div>
+        CAC <span>ONE</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Funciones</a>
+        <a href="#pricing">Precios</a>
+        <a href="#about">Nosotros</a>
+        <a href="#contact">Contacto</a>
+      </div>
+      <div class="nav-right">
+        <button class="theme-btn" id="themeToggle" aria-label="Cambiar tema">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20vi%20CAC%20ONE%20en%20InnovaTecNM%20y%20quiero%20saber%20m%C3%A1s." class="btn btn-primary" target="_blank">
+          <i class="fa-brands fa-whatsapp"></i> Contáctanos
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Funciones</a>
+    <a href="#pricing">Precios</a>
+    <a href="#about">Nosotros</a>
+    <a href="#contact">Contacto</a>
+    <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20vi%20CAC%20ONE%20y%20quiero%20saber%20m%C3%A1s." target="_blank" style="color:var(--positive);font-weight:700;">
+      <i class="fa-brands fa-whatsapp"></i> WhatsApp
+    </a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════ HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge"><i class="fa-solid fa-certificate"></i> InnovaTecNM 2026 · Folio 6585717</span>
+      </div>
+
+      <h1 class="hero-title">
+        Tu negocio ya habla.<br>
+        <span class="accent">¿Lo estás</span> <span class="accent-g">escuchando?</span>
+      </h1>
+
+      <p class="hero-sub">
+        CAC ONE analiza cada comentario en tus redes sociales con IA entrenada en español mexicano. Detecta sentimientos, crisis y oportunidades — en tiempo real, desde tu celular.
+      </p>
+
+      <div class="hero-cta">
+        <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20quiero%20probar%20CAC%20ONE%20gratis." target="_blank" class="btn btn-primary btn-lg">
+          <i class="fa-brands fa-whatsapp"></i> Empezar gratis
+        </a>
+        <a href="#features" class="btn btn-ghost btn-lg">
+          <i class="fa-solid fa-play"></i> Ver cómo funciona
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-val"><span class="col-a">95%</span></div>
+          <div class="hstat-lbl">Consumidores basan compras en reseñas</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val"><span class="col-g">68%</span></div>
+          <div class="hstat-lbl">PyMEs sin herramienta de análisis</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val"><span class="col-p">97%</span></div>
+          <div class="hstat-lbl">Más económico que la competencia</div>
+        </div>
+      </div>
+
+      <!-- Dashboard mockup -->
+      <div class="hero-mockup">
+        <div class="mock-titlebar">
+          <div class="mock-dot md-r"></div>
+          <div class="mock-dot md-y"></div>
+          <div class="mock-dot md-g"></div>
+          <div class="mock-title-text">CAC ONE — Dashboard</div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-chart-area">
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Sentimientos del mes</div>
+            <div class="mock-bar-row">
+              <div class="mock-bar-label">Muy pos.</div>
+              <div class="mock-bar-track"><div class="mock-bar-fill mbf-g" style="width:0%" data-w="72%"></div></div>
+              <div class="mock-bar-pct">72%</div>
+            </div>
+            <div class="mock-bar-row">
+              <div class="mock-bar-label">Positivo</div>
+              <div class="mock-bar-track"><div class="mock-bar-fill mbf-a" style="width:0%" data-w="48%"></div></div>
+              <div class="mock-bar-pct">48%</div>
+            </div>
+            <div class="mock-bar-row">
+              <div class="mock-bar-label">Neutro</div>
+              <div class="mock-bar-track"><div class="mock-bar-fill mbf-y" style="width:0%" data-w="33%"></div></div>
+              <div class="mock-bar-pct">33%</div>
+            </div>
+            <div class="mock-bar-row">
+              <div class="mock-bar-label">Negativo</div>
+              <div class="mock-bar-track"><div class="mock-bar-fill mbf-r" style="width:0%" data-w="18%"></div></div>
+              <div class="mock-bar-pct">18%</div>
+            </div>
+            <div class="mock-bar-row">
+              <div class="mock-bar-label">Muy neg.</div>
+              <div class="mock-bar-track"><div class="mock-bar-fill mbf-gr" style="width:0%" data-w="8%"></div></div>
+              <div class="mock-bar-pct">8%</div>
+            </div>
+          </div>
+          <div class="mock-right">
+            <div class="mock-alert-card">
+              <div class="mac-head"><i class="fa-solid fa-triangle-exclamation"></i> Crisis detectada</div>
+              <div class="mac-body">Comentario muy negativo — @cliente_mx en Instagram hace 2 min</div>
+            </div>
+            <div class="mock-stats-row">
+              <div class="mock-stat-mini">
+                <div class="msm-val">247</div>
+                <div class="msm-lbl">comentarios hoy</div>
+              </div>
+              <div class="mock-stat-mini">
+                <div class="msm-val" style="color:var(--action)">89%</div>
+                <div class="msm-lbl">procesados</div>
+              </div>
+              <div class="mock-stat-mini">
+                <div class="msm-val" style="color:var(--negative)">3</div>
+                <div class="msm-lbl">alertas hoy</div>
+              </div>
+            </div>
+            <div class="mock-pill"><i class="fa-solid fa-circle-check"></i> Monitoreo activo 24/7</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ STAT BANNER -->
+<div class="stat-banner">
+  <div class="container">
+    <div class="stat-banner-inner">
+      <div class="stat-big" id="statBig">95%</div>
+      <div class="stat-banner-text">de los consumidores decide con base en opiniones digitales. Cada comentario ignorado es un cliente que no regresa.</div>
+      <div class="stat-banner-sub">Fuente: IAB México 2024 — Hábitos de consumo digital</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ FEATURES -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-label">
+      <span class="badge"><i class="fa-solid fa-bolt"></i> Funcionalidades</span>
+    </div>
+    <h2 class="section-title">Todo lo que tu negocio necesita escuchar</h2>
+    <p class="section-sub">Cuatro módulos diseñados para que cualquier dueño de PyME entienda lo que opinan sus clientes, sin ser técnico.</p>
+
+    <div class="features-grid">
+      <div class="feat-card" data-delay="0">
+        <div class="feat-icon-wrap fi-action"><i class="fa-solid fa-language"></i></div>
+        <div class="feat-title">IA entrenada en español mexicano</div>
+        <div class="feat-desc">Entiende sarcasmo, ironía y modismos que las herramientas globales no comprenden. "Qué chido... no" ya no engaña a nuestra IA.</div>
+        <div class="feat-stat"><i class="fa-solid fa-check-circle"></i> +50 modismos mexicanos detectados</div>
+      </div>
+      <div class="feat-card" data-delay="100">
+        <div class="feat-icon-wrap fi-purple"><i class="fa-solid fa-brain"></i></div>
+        <div class="feat-title">Análisis de sentimientos en 5 niveles</div>
+        <div class="feat-desc">Clasifica cada comentario desde Muy Positivo hasta Muy Negativo de forma automática, sin que leas uno por uno.</div>
+        <div class="feat-stat"><i class="fa-solid fa-check-circle"></i> F1-Score ≥ 0.70 validado</div>
+      </div>
+      <div class="feat-card" data-delay="200">
+        <div class="feat-icon-wrap fi-green"><i class="fa-solid fa-bell"></i></div>
+        <div class="feat-title">Alertas de crisis en tiempo real</div>
+        <div class="feat-desc">Cuando un cliente escribe algo muy negativo, recibes una notificación push en tu celular en segundos, no al día siguiente.</div>
+        <div class="feat-stat"><i class="fa-solid fa-check-circle"></i> Notificación en menos de 60 seg</div>
+      </div>
+      <div class="feat-card" data-delay="300">
+        <div class="feat-icon-wrap fi-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="feat-title">Monitoreo continuo 24/7</div>
+        <div class="feat-desc">CAC ONE trabaja mientras tú atiendes tu negocio: captura, analiza y clasifica comentarios todo el día, todos los días, sin intervención humana.</div>
+        <div class="feat-stat"><i class="fa-solid fa-check-circle"></i> 10,000 comentarios/mes procesados</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ CHANNELS -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-label">
+      <span class="badge"><i class="fa-solid fa-satellite-dish"></i> Canales</span>
+    </div>
+    <h2 class="section-title">Canales analizados</h2>
+    <p class="section-sub">Monitoreo automatizado en tiempo real en las plataformas donde tus clientes ya están hablando de ti.</p>
+    <div class="channels-row">
+      <div class="channel-chip"><i class="fa-brands fa-facebook ch-fb"></i> Facebook</div>
+      <div class="channel-chip"><i class="fa-brands fa-instagram ch-ig"></i> Instagram</div>
+      <div class="channel-chip"><i class="fa-brands fa-youtube ch-yt"></i> YouTube</div>
+      <div class="channel-chip"><i class="fa-brands fa-x-twitter ch-x"></i> X (Twitter)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-label">
+      <span class="badge"><i class="fa-solid fa-tag"></i> Precios</span>
+    </div>
+    <h2 class="section-title">Planes accesibles para tu PyME</h2>
+    <p class="section-sub">97% más económico que Hootsuite. Diseñado desde el principio para el presupuesto de la micro y pequeña empresa mexicana.</p>
+
+    <div class="pricing-grid">
+      <!-- FREE -->
+      <div class="price-card" data-delay="0">
+        <div class="price-name">Free</div>
+        <div class="price-amount">
+          <span class="price-currency">$</span>
+          <span class="price-val">0</span>
+          <span class="price-period">/mes</span>
+        </div>
+        <div class="price-desc">Empieza sin compromiso. Ideal para probar la plataforma con tu negocio real.</div>
+        <ul class="price-features">
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>1 red social (YouTube)</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Análisis básico (3 niveles)</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>500 comentarios/mes</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Dashboard básico</span></li>
+          <li><i class="fa-solid fa-circle-xmark pf-no"></i><span>Sin alertas push</span></li>
+          <li><i class="fa-solid fa-circle-xmark pf-no"></i><span>Sin reportes exportables</span></li>
+        </ul>
+        <div class="price-cta">
+          <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20quiero%20empezar%20con%20el%20plan%20FREE%20de%20CAC%20ONE." target="_blank" class="btn btn-outline btn-lg" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-rocket"></i> Empezar gratis
+          </a>
+        </div>
+      </div>
+
+      <!-- PRO -->
+      <div class="price-card featured" data-delay="150">
+        <div class="popular-tag"><i class="fa-solid fa-star"></i> Más popular</div>
+        <div class="price-name" style="color:var(--action)">Pro</div>
+        <div class="price-amount">
+          <span class="price-currency" style="color:var(--action)">$</span>
+          <span class="price-val" style="color:var(--action)">499</span>
+          <span class="price-period">MXN/mes</span>
+        </div>
+        <div class="price-desc">Todo lo que necesitas para tomar decisiones con base en lo que tus clientes sienten.</div>
+        <ul class="price-features">
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>3 redes: YouTube + FB + IG</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>5 niveles de sentimiento + sarcasmo</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>10,000 comentarios/mes</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Alertas push en tiempo real</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Reportes PDF y Excel</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Alineación NOM-035 documentada</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Soporte por email 48h</span></li>
+        </ul>
+        <div class="price-cta">
+          <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20quiero%20contratar%20el%20Plan%20PRO%20de%20CAC%20ONE%20por%20%24499%20MXN%2Fmes." target="_blank" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+            <i class="fa-brands fa-whatsapp"></i> Quiero el PRO
+          </a>
+        </div>
+      </div>
+
+      <!-- ENTERPRISE -->
+      <div class="price-card" data-delay="300">
+        <div class="price-name">Enterprise</div>
+        <div class="price-amount">
+          <span class="price-val" style="font-size:36px;letter-spacing:-1px;">A cotizar</span>
+        </div>
+        <div class="price-desc">Para cámaras de comercio, cadenas y empresas con múltiples sucursales o sectores.</div>
+        <ul class="price-features">
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Redes ilimitadas</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Dashboard white-label</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>API access completo</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Reportes ejecutivos semanales</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Pack CANACO: $2,990 MXN / 10 PyMEs</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Soporte dedicado</span></li>
+        </ul>
+        <div class="price-cta">
+          <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20soy%20de%20una%20c%C3%A1mara%20de%20comercio%20y%20me%20interesa%20el%20plan%20Enterprise%20de%20CAC%20ONE." target="_blank" class="btn btn-ghost btn-lg" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-building"></i> Cotizar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla comparativa -->
+    <h3 style="text-align:center;font-size:18px;font-weight:700;margin:48px 0 0;color:var(--text-1)">¿Por qué CAC ONE y no la competencia?</h3>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th class="highlight">CAC ONE PRO</th>
+            <th>Hootsuite</th>
+            <th>Brandwatch</th>
+            <th>Mention</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Precio / mes</td>
+            <td class="highlight ct-price-good">$499 MXN</td>
+            <td class="ct-price-bad">$700+ USD</td>
+            <td class="ct-price-bad">$1,000+ USD</td>
+            <td>$29+ USD</td>
+          </tr>
+          <tr>
+            <td>Español mexicano coloquial</td>
+            <td class="highlight"><span class="ct-yes">✓</span> Nativo</td>
+            <td><span class="ct-partial">~</span> Parcial</td>
+            <td><span class="ct-partial">~</span> Parcial</td>
+            <td><span class="ct-partial">~</span> Parcial</td>
+          </tr>
+          <tr>
+            <td>Sarcasmo e ironía mexicana</td>
+            <td class="highlight"><span class="ct-yes">✓</span> Propio</td>
+            <td><span class="ct-no">✗</span></td>
+            <td><span class="ct-no">✗</span></td>
+            <td><span class="ct-no">✗</span></td>
+          </tr>
+          <tr>
+            <td>Alineación NOM-035</td>
+            <td class="highlight"><span class="ct-yes">✓</span></td>
+            <td><span class="ct-no">✗</span></td>
+            <td><span class="ct-no">✗</span></td>
+            <td><span class="ct-no">✗</span></td>
+          </tr>
+          <tr>
+            <td>Modelo Freemium</td>
+            <td class="highlight"><span class="ct-yes">✓</span></td>
+            <td><span class="ct-no">✗</span></td>
+            <td><span class="ct-no">✗</span></td>
+            <td><span class="ct-partial">~</span> Trial</td>
+          </tr>
+          <tr>
+            <td>Reportes para no técnicos</td>
+            <td class="highlight"><span class="ct-yes">✓</span> PDF/Excel</td>
+            <td><span class="ct-partial">~</span> Complejo</td>
+            <td><span class="ct-partial">~</span> Complejo</td>
+            <td><span class="ct-yes">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ IMPACT -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-label">
+      <span class="badge"><i class="fa-solid fa-globe"></i> Impacto Social</span>
+    </div>
+    <h2 class="section-title">El impacto real en números</h2>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-icon">💬</div>
+        <div class="impact-stat">+2,000%</div>
+        <div class="impact-title">ROI demostrable</div>
+        <div class="impact-desc">Una PyME con 20 comentarios negativos no atendidos pierde ~$10,500 MXN/mes. CAC ONE cuesta $499.</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">⚡</div>
+        <div class="impact-stat green">48h → min</div>
+        <div class="impact-title">Tiempo de respuesta</div>
+        <div class="impact-desc">De esperar 2 días para enterarte de una queja a recibir la alerta en menos de 60 segundos.</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">🛡️</div>
+        <div class="impact-stat purple">NOM-035</div>
+        <div class="impact-title">Cumplimiento normativo</div>
+        <div class="impact-desc">La única herramienta de análisis de sentimientos que documenta su aportación al cumplimiento de la NOM-035-STPS-2018.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ ABOUT -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="section-label">
+      <span class="badge"><i class="fa-solid fa-users"></i> Nosotros</span>
+    </div>
+    <h2 class="section-title">Construido desde México, para México</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="about-lead">Somos estudiantes del Tecnológico Nacional de México que decidimos hacer algo al respecto.</p>
+        <p class="about-body">Vimos a los negocios de nuestras familias y vecinos perder clientes por no tener herramientas para leer lo que opinaban en redes. Las soluciones globales costaban miles de dólares y no entendían cómo habla el mexicano. CAC ONE nació de esa pregunta: ¿qué pasaría si la inteligencia artificial pudiera escuchar lo que los clientes sienten y avisarte en tiempo real?</p>
+        <div class="about-bullets">
+          <div class="ab-item"><i class="fa-solid fa-check-circle"></i><span>Democratizamos el análisis de sentimientos para negocios sin grandes presupuestos.</span></div>
+          <div class="ab-item"><i class="fa-solid fa-check-circle"></i><span>Mejoramos la calidad de atención al cliente en PyMEs de toda la república.</span></div>
+          <div class="ab-item"><i class="fa-solid fa-check-circle"></i><span>Protegemos la salud emocional del personal con cumplimiento automático de la NOM-035.</span></div>
+          <div class="ab-item"><i class="fa-solid fa-certificate"></i><span>InnovaTecNM 2026 · Categoría: Soluciones de Software para PyMEs · Folio: 6585717</span></div>
+        </div>
+      </div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar ta-1"><i class="fa-solid fa-code"></i></div>
+          <div class="team-info">
+            <div class="team-name">Christopher Meneses Chávez</div>
+            <div class="team-role">Arquitecto de Software y Nube</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar ta-2"><i class="fa-solid fa-brain"></i></div>
+          <div class="team-info">
+            <div class="team-name">Jorge A. Martínez Toris</div>
+            <div class="team-role">Gerente de Inteligencia Artificial</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar ta-3"><i class="fa-solid fa-palette"></i></div>
+          <div class="team-info">
+            <div class="team-name">Rubén A. Nolasco Ruiz</div>
+            <div class="team-role">Gerente de Diseño y Comunicaciones</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar ta-4"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="team-info">
+            <div class="team-name">Yunhuen Cruz Segura</div>
+            <div class="team-role">Director de Operaciones y Estrategia Comercial</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ CTA FINAL -->
+<section class="cta-section" id="contact">
+  <div class="container">
+    <div class="cta-inner">
+      <h2 class="cta-title">Cada comentario cuenta.<br>Empieza a escucharlos hoy.</h2>
+      <p class="cta-sub">Sin tarjeta de crédito. Sin instalación. Listo en 5 minutos.</p>
+      <div class="cta-buttons">
+        <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20vi%20CAC%20ONE%20en%20InnovaTecNM%20y%20quiero%20empezar%20gratis." target="_blank" class="btn btn-white btn-lg">
+          <i class="fa-brands fa-whatsapp"></i> Hablar por WhatsApp
+        </a>
+        <a href="https://www.instagram.com/cacone_mx" target="_blank" class="btn btn-white-outline btn-lg">
+          <i class="fa-brands fa-instagram"></i> Seguirnos en Instagram
+        </a>
+      </div>
+      <p class="cta-note"><i class="fa-solid fa-envelope"></i> caconebyrc@gmail.com &nbsp;·&nbsp; <i class="fa-solid fa-certificate"></i> InnovaTecNM 2026 · Folio 6585717</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon"><i class="fa-solid fa-comments"></i></div>
+          CAC ONE
+        </div>
+        <p class="footer-desc">Plataforma SaaS de análisis de sentimientos con IA especializada en español mexicano para PyMEs. Desarrollada por estudiantes del TecNM.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/cacone_mx" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://wa.me/527XXXXXXXXX" target="_blank" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="mailto:caconebyrc@gmail.com" class="social-btn" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Plataforma</div>
+        <ul class="footer-links">
+          <li><a href="#features"><i class="fa-solid fa-chevron-right"></i> Funcionalidades</a></li>
+          <li><a href="#pricing"><i class="fa-solid fa-chevron-right"></i> Precios</a></li>
+          <li><a href="#about"><i class="fa-solid fa-chevron-right"></i> Sobre nosotros</a></li>
+          <li><a href="#contact"><i class="fa-solid fa-chevron-right"></i> Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contacto</div>
+        <ul class="footer-links">
+          <li><a href="https://wa.me/527XXXXXXXXX" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+          <li><a href="mailto:caconebyrc@gmail.com"><i class="fa-solid fa-envelope"></i> caconebyrc@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/cacone_mx" target="_blank"><i class="fa-brands fa-instagram"></i> @cacone_mx</a></li>
+          <li><a href="#"><i class="fa-solid fa-university"></i> TecNM Campus</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 <strong>CAC ONE®</strong> — Todos los derechos reservados · Tecnológico Nacional de México</div>
+      <div class="footer-folio"><i class="fa-solid fa-certificate"></i> InnovaTecNM 2026 · Folio 6585717</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Theme toggle ──────────────────────────
+const root = document.documentElement;
+const themeBtn = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+const saved = localStorage.getItem('cac-theme') || 'light';
+root.setAttribute('data-theme', saved);
+themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+themeBtn.addEventListener('click', () => {
+  const current = root.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  localStorage.setItem('cac-theme', next);
+});
+
+// ── Hamburger ──────────────────────────
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+});
+
+// ── Intersection Observer — fade in cards ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const delay = parseInt(el.dataset.delay || 0);
+      setTimeout(() => el.classList.add('visible'), delay);
+      observer.unobserve(el);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.feat-card, .price-card').forEach(el => observer.observe(el));
+
+// ── Stat banner appear ──
+const statObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      statObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.stat-big').forEach(el => statObserver.observe(el));
+
+// ── Animate bar fills ──
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.mock-bar-fill').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.w; }, 300);
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.hero-mockup').forEach(el => barObserver.observe(el));
+
+// Trigger bars on load too
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.mock-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.w;
+    });
+  }, 800);
+});
+</script>
+</body>
+</html>
