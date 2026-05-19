@@ -151,14 +151,12 @@ a { text-decoration: none; color: inherit; }
   font-size: 18px;
   color: var(--text-1);
 }
-.nav-logo-icon {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--action) 0%, var(--purple) 100%);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  font-size: 16px;
+.nav-logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
   flex-shrink: 0;
+  display: block;
 }
 .nav-logo span { color: var(--action); }
 
@@ -316,6 +314,24 @@ a { text-decoration: none; color: inherit; }
   position: relative;
 }
 .hero-badge { animation: fadeUp 0.6s ease both; }
+.hero-mockup-img-wrap {
+  width: 100%;
+  max-width: min(820px, 58vw);
+  margin: 0 auto;
+  animation: fadeUp 0.6s 0.05s ease both;
+}
+.hero-mockup-img {
+  display: block;
+  width: 100%;
+  max-height: min(280px, 38vh);
+  height: auto;
+  object-fit: contain;
+  border-radius: clamp(10px, 1.5vw, 16px);
+  filter: drop-shadow(0 10px 24px rgba(15, 23, 42, 0.1));
+}
+[data-theme="dark"] .hero-mockup-img {
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.28));
+}
 .hero-title {
   font-size: clamp(32px, 6vw, 60px);
   font-weight: 900;
@@ -722,7 +738,6 @@ a { text-decoration: none; color: inherit; }
 .pf-yes { color: var(--positive); }
 .pf-no  { color: var(--text-3); }
 .pf-no ~ span { color: var(--text-3); text-decoration: line-through; }
-.price-cta { margin-top: auto; }
 
 /* ══════════════════════════════════════
    COMPARISON
@@ -841,6 +856,7 @@ a { text-decoration: none; color: inherit; }
 .ta-2 { background: var(--purple-soft); color: var(--purple); }
 .ta-3 { background: var(--positive-s); color: var(--positive); }
 .ta-4 { background: rgba(243,156,18,0.1); color: var(--neutral); }
+.ta-5 { background: rgba(52, 152, 219, 0.12); color: #2980b9; }
 .team-info {}
 .team-name { font-size: 13px; font-weight: 700; color: var(--text-1); }
 .team-role { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
@@ -980,13 +996,12 @@ a { text-decoration: none; color: inherit; }
   font-size: 18px;
   color: var(--text-1);
 }
-.footer-logo-icon {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--action), var(--purple));
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  font-size: 15px;
+.footer-logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
 }
 .footer-desc {
   font-size: 13px;
@@ -1073,6 +1088,9 @@ a { text-decoration: none; color: inherit; }
   .nav-right .btn { display: none; }
 
   .hero { padding: 48px 0 40px; }
+  .hero-inner { gap: 20px; }
+  .hero-mockup-img-wrap { max-width: min(280px, 82vw); }
+  .hero-mockup-img { max-height: 200px; border-radius: 10px; }
   .hero-stats { gap: 20px; }
   .hstat-val { font-size: 26px; }
 
@@ -1107,8 +1125,7 @@ a { text-decoration: none; color: inherit; }
   <div class="container">
     <div class="nav-inner">
       <a href="#" class="nav-logo">
-        <div class="nav-logo-icon"><i class="fa-solid fa-comments"></i></div>
-        CAC <span>ONE</span>
+        <img src="assets/img/logo-cac.png" alt="CAC ONE" class="nav-logo-img" width="40" height="40" decoding="async">
       </a>
       <div class="nav-links">
         <a href="#features">Funciones</a>
@@ -1120,8 +1137,8 @@ a { text-decoration: none; color: inherit; }
         <button class="theme-btn" id="themeToggle" aria-label="Cambiar tema">
           <i class="fa-solid fa-moon" id="themeIcon"></i>
         </button>
-        <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20vi%20CAC%20ONE%20en%20InnovaTecNM%20y%20quiero%20saber%20m%C3%A1s." class="btn btn-primary" target="_blank">
-          <i class="fa-brands fa-whatsapp"></i> Contáctanos
+        <a href="https://www.instagram.com/cacone_mx" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-instagram"></i> Síguenos en Instagram
         </a>
         <button class="hamburger" id="hamburger" aria-label="Menú">
           <span></span><span></span><span></span>
@@ -1134,8 +1151,8 @@ a { text-decoration: none; color: inherit; }
     <a href="#pricing">Precios</a>
     <a href="#about">Nosotros</a>
     <a href="#contact">Contacto</a>
-    <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20vi%20CAC%20ONE%20y%20quiero%20saber%20m%C3%A1s." target="_blank" style="color:var(--positive);font-weight:700;">
-      <i class="fa-brands fa-whatsapp"></i> WhatsApp
+    <a href="https://www.instagram.com/cacone_mx" target="_blank" rel="noopener noreferrer" style="color:var(--purple);font-weight:700;">
+      <i class="fa-brands fa-instagram"></i> Instagram
     </a>
   </div>
 </nav>
@@ -1149,6 +1166,18 @@ a { text-decoration: none; color: inherit; }
         <span class="badge"><i class="fa-solid fa-certificate"></i> InnovaTecNM 2026 · Folio 6585717</span>
       </div>
 
+      <div class="hero-mockup-img-wrap">
+        <img
+          src="assets/img/mockups.png"
+          alt="Vista previa de CAC ONE en escritorio y móvil"
+          class="hero-mockup-img"
+          width="1840"
+          height="920"
+          loading="eager"
+          decoding="async"
+        >
+      </div>
+
       <h1 class="hero-title">
         Tu negocio ya habla.<br>
         <span class="accent">¿Lo estás</span> <span class="accent-g">escuchando?</span>
@@ -1159,8 +1188,8 @@ a { text-decoration: none; color: inherit; }
       </p>
 
       <div class="hero-cta">
-        <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20quiero%20probar%20CAC%20ONE%20gratis." target="_blank" class="btn btn-primary btn-lg">
-          <i class="fa-brands fa-whatsapp"></i> Empezar gratis
+        <a href="#pricing" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-rocket"></i> Ver planes
         </a>
         <a href="#features" class="btn btn-ghost btn-lg">
           <i class="fa-solid fa-play"></i> Ver cómo funciona
@@ -1334,16 +1363,11 @@ a { text-decoration: none; color: inherit; }
         <ul class="price-features">
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>1 red social (YouTube)</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Análisis básico (3 niveles)</span></li>
-          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>500 comentarios/mes</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>250 comentarios/mes</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Dashboard básico</span></li>
           <li><i class="fa-solid fa-circle-xmark pf-no"></i><span>Sin alertas push</span></li>
           <li><i class="fa-solid fa-circle-xmark pf-no"></i><span>Sin reportes exportables</span></li>
         </ul>
-        <div class="price-cta">
-          <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20quiero%20empezar%20con%20el%20plan%20FREE%20de%20CAC%20ONE." target="_blank" class="btn btn-outline btn-lg" style="width:100%;justify-content:center;">
-            <i class="fa-solid fa-rocket"></i> Empezar gratis
-          </a>
-        </div>
       </div>
 
       <!-- PRO -->
@@ -1352,24 +1376,19 @@ a { text-decoration: none; color: inherit; }
         <div class="price-name" style="color:var(--action)">Pro</div>
         <div class="price-amount">
           <span class="price-currency" style="color:var(--action)">$</span>
-          <span class="price-val" style="color:var(--action)">499</span>
+          <span class="price-val" style="color:var(--action)">899</span>
           <span class="price-period">MXN/mes</span>
         </div>
         <div class="price-desc">Todo lo que necesitas para tomar decisiones con base en lo que tus clientes sienten.</div>
         <ul class="price-features">
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>3 redes: YouTube + FB + IG</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>5 niveles de sentimiento + sarcasmo</span></li>
-          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>10,000 comentarios/mes</span></li>
+          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>1,000 comentarios/mes</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Alertas push en tiempo real</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Reportes PDF y Excel</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Alineación NOM-035 documentada</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Soporte por email 48h</span></li>
         </ul>
-        <div class="price-cta">
-          <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20quiero%20contratar%20el%20Plan%20PRO%20de%20CAC%20ONE%20por%20%24499%20MXN%2Fmes." target="_blank" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
-            <i class="fa-brands fa-whatsapp"></i> Quiero el PRO
-          </a>
-        </div>
       </div>
 
       <!-- ENTERPRISE -->
@@ -1384,14 +1403,8 @@ a { text-decoration: none; color: inherit; }
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Dashboard white-label</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>API access completo</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Reportes ejecutivos semanales</span></li>
-          <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Pack CANACO: $2,990 MXN / 10 PyMEs</span></li>
           <li><i class="fa-solid fa-circle-check pf-yes"></i><span>Soporte dedicado</span></li>
         </ul>
-        <div class="price-cta">
-          <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20soy%20de%20una%20c%C3%A1mara%20de%20comercio%20y%20me%20interesa%20el%20plan%20Enterprise%20de%20CAC%20ONE." target="_blank" class="btn btn-ghost btn-lg" style="width:100%;justify-content:center;">
-            <i class="fa-solid fa-building"></i> Cotizar
-          </a>
-        </div>
       </div>
     </div>
 
@@ -1411,7 +1424,7 @@ a { text-decoration: none; color: inherit; }
         <tbody>
           <tr>
             <td>Precio / mes</td>
-            <td class="highlight ct-price-good">$499 MXN</td>
+            <td class="highlight ct-price-good">$899 MXN</td>
             <td class="ct-price-bad">$700+ USD</td>
             <td class="ct-price-bad">$1,000+ USD</td>
             <td>$29+ USD</td>
@@ -1469,7 +1482,7 @@ a { text-decoration: none; color: inherit; }
         <div class="impact-icon">💬</div>
         <div class="impact-stat">+2,000%</div>
         <div class="impact-title">ROI demostrable</div>
-        <div class="impact-desc">Una PyME con 20 comentarios negativos no atendidos pierde ~$10,500 MXN/mes. CAC ONE cuesta $499.</div>
+        <div class="impact-desc">Una PyME con 20 comentarios negativos no atendidos pierde ~$10,500 MXN/mes. CAC ONE cuesta $899.</div>
       </div>
       <div class="impact-card">
         <div class="impact-icon">⚡</div>
@@ -1534,6 +1547,13 @@ a { text-decoration: none; color: inherit; }
             <div class="team-role">Director de Operaciones y Estrategia Comercial</div>
           </div>
         </div>
+        <div class="team-card">
+          <div class="team-avatar ta-5"><i class="fa-solid fa-handshake"></i></div>
+          <div class="team-info">
+            <div class="team-name">Bárbara Chávez</div>
+            <div class="team-role">Gerente de Alianzas y Propiedad Intelectual</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1546,10 +1566,10 @@ a { text-decoration: none; color: inherit; }
       <h2 class="cta-title">Cada comentario cuenta.<br>Empieza a escucharlos hoy.</h2>
       <p class="cta-sub">Sin tarjeta de crédito. Sin instalación. Listo en 5 minutos.</p>
       <div class="cta-buttons">
-        <a href="https://wa.me/527XXXXXXXXX?text=Hola%2C%20vi%20CAC%20ONE%20en%20InnovaTecNM%20y%20quiero%20empezar%20gratis." target="_blank" class="btn btn-white btn-lg">
-          <i class="fa-brands fa-whatsapp"></i> Hablar por WhatsApp
+        <a href="mailto:caconebyrc@gmail.com" class="btn btn-white btn-lg">
+          <i class="fa-solid fa-envelope"></i> Escríbenos
         </a>
-        <a href="https://www.instagram.com/cacone_mx" target="_blank" class="btn btn-white-outline btn-lg">
+        <a href="https://www.instagram.com/cacone_mx" target="_blank" rel="noopener noreferrer" class="btn btn-white-outline btn-lg">
           <i class="fa-brands fa-instagram"></i> Seguirnos en Instagram
         </a>
       </div>
@@ -1564,13 +1584,11 @@ a { text-decoration: none; color: inherit; }
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="footer-logo">
-          <div class="footer-logo-icon"><i class="fa-solid fa-comments"></i></div>
-          CAC ONE
+          <img src="assets/img/logo-cac.png" alt="CAC ONE" class="footer-logo-img" width="60" height="60" decoding="async">
         </div>
         <p class="footer-desc">Plataforma SaaS de análisis de sentimientos con IA especializada en español mexicano para PyMEs. Desarrollada por estudiantes del TecNM.</p>
         <div class="footer-social">
-          <a href="https://www.instagram.com/cacone_mx" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="https://wa.me/527XXXXXXXXX" target="_blank" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="https://www.instagram.com/cacone_mx" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
           <a href="mailto:caconebyrc@gmail.com" class="social-btn" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
         </div>
       </div>
@@ -1586,7 +1604,6 @@ a { text-decoration: none; color: inherit; }
       <div>
         <div class="footer-col-title">Contacto</div>
         <ul class="footer-links">
-          <li><a href="https://wa.me/527XXXXXXXXX" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
           <li><a href="mailto:caconebyrc@gmail.com"><i class="fa-solid fa-envelope"></i> caconebyrc@gmail.com</a></li>
           <li><a href="https://www.instagram.com/cacone_mx" target="_blank"><i class="fa-brands fa-instagram"></i> @cacone_mx</a></li>
           <li><a href="#"><i class="fa-solid fa-university"></i> TecNM Campus</a></li>
